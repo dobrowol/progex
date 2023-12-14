@@ -77,10 +77,12 @@ public class JavaICFGBuilder {
 		for (int i = 0; i < parseTrees.length; i++) 
 			ctxToKey[i] = new IdentityHashMap<>();
 
+		System.out.println("for each Parse-Tree, construct visitor and call visit(tree) ");
 		for (int i = 0; i < parseTrees.length; i++) {
 			currentFileClasses.clear();
 			currentFileClasses.addAll(JavaClassExtractor.extractInfo(javaFiles[i]));
 			ICFGVisitor icfgvisit = new ICFGVisitor();
+			System.out.println(parseTrees[i].getText());
 			icfgvisit.visit(parseTrees[i]);
 			ctxToKey[i] = icfgvisit.getMap();
 		}
@@ -104,7 +106,7 @@ public class JavaICFGBuilder {
 //		notImplemented.setProperty("exits", temp);
 //		icfg.addVertex(notImplemented);
 //		icfg.addMethodEntry(notImplemented);
-
+		System.out.println("Add ControlFlowGraphs to ICFG");
 		for (ControlFlowGraph cfg : cfgs) {
 			for (CFNode entry : cfg.getAllMethodEntries()) {
 				if (cfg.getPackage() != null) {
@@ -128,6 +130,7 @@ public class JavaICFGBuilder {
 		}
 		// for each CFG, get all method entries, and build the second map 
 		// returns: Map<MethodKey, CFNode> 'keyToEntry' per each java files
+		System.out.println("get all method entries, and build the second map");
 		Map<MethodKey, CFNode> keyToEntry = new HashMap<>();
 		CFNode[] entries = icfg.getAllMethodEntries();
 		for (CFNode node : entries) {
@@ -137,6 +140,7 @@ public class JavaICFGBuilder {
 
 //		MethodKey keyNotImpl = new MethodKey("Not Implemented", "Not Implemented", "notImplemented", 0);
 //		keyToEntry.put(keyNotImpl, notImplemented);
+		System.out.println("add CALLS edge from 'node' to 'entry'");
 		GraphTraversal<CFNode, CFEdge> iter = new DepthFirstTraversal<>(icfg, icfg.getAllMethodEntries()[0]);
 		while (iter.hasNext()) {
 			CFNode node = iter.nextVertex();
@@ -252,11 +256,14 @@ public class JavaICFGBuilder {
 
 			//Extract imported class information from Java standard library 
 			try {
-				for (JavaClass jc : JavaClassExtractor.extractImportsInfo(activeClasses.peek().IMPORTS)) {
-					if (!availableClasses.contains(jc)) {
-						availableClasses.add(jc);
+				if (activeClasses.peek()!= null){
+					for (JavaClass jc : JavaClassExtractor.extractImportsInfo(activeClasses.peek().IMPORTS)) {
+						if (!availableClasses.contains(jc)) {
+							availableClasses.add(jc);
+						}
+
 					}
-				}
+			}
 
 			} catch (IOException ex) {
 				System.err.println(ex);
@@ -266,7 +273,9 @@ public class JavaICFGBuilder {
 
 			//clear the list and regenerate it. (required for inner class)
 			globalVariables.clear();
-			activeClasses.pop();
+			if (activeClasses.size()>0){
+				activeClasses.pop();
+			}
 			for (JavaClass cls : activeClasses) {
 				for (JavaField jf : cls.getAllFields()) {
 					globalVariables.put(jf.NAME, jf.TYPE);
@@ -525,7 +534,7 @@ public class JavaICFGBuilder {
 			//
 			// variableDeclaratorId
 			//   :  Identifier ('[' ']')*
-
+			// System.out.println("visitMethodDeclaration "+ctx.methodBody().getText());
 			if (ctx.formalParameters().formalParameterList() != null) {
 				for (JavaParser.FormalParameterContext param
 						: ctx.formalParameters().formalParameterList().formalParameter()) {
@@ -535,8 +544,10 @@ public class JavaICFGBuilder {
 					localVariables.put(ctx.formalParameters().formalParameterList().lastFormalParameter().variableDeclaratorId().getText(), findClassbyName(visit(ctx.formalParameters().formalParameterList().lastFormalParameter().typeType())));
 				}
 			}
-
-			visit(ctx.methodBody());
+			if (ctx.methodBody() != null)
+			{
+				visit(ctx.methodBody());
+			}
 			localVariables.clear();
 			return null;
 		}
@@ -576,22 +587,23 @@ public class JavaICFGBuilder {
 			 */
 
 			JavaClass currentClass = activeClasses.peek();
-
-			if (ctx.primary().getText().equals("this")) {
-				returnType = currentClass;
-				returnMethod = findMethodbyName(currentClass, currentClass.NAME);
-				return null;
-			}
-
-			if (ctx.primary().getText().equals("super")) {
-				returnType = findClassbyName(currentClass.EXTENDS);
-				if (returnType == null) {
+			if (currentClass != null)
+			{
+				if (ctx.primary().getText().equals("this")) {
+					returnType = currentClass;
+					returnMethod = findMethodbyName(currentClass, currentClass.NAME);
 					return null;
 				}
-				returnMethod = findMethodbyName(returnType, returnType.NAME);
-				return null;
-			}
 
+				if (ctx.primary().getText().equals("super")) {
+					returnType = findClassbyName(currentClass.EXTENDS);
+					if (returnType == null) {
+						return null;
+					}
+					returnMethod = findMethodbyName(returnType, returnType.NAME);
+					return null;
+				}
+			}
 			//literal
 			if (ctx.primary().literal() != null) {
 				if (ctx.primary().literal().BooleanLiteral() != null) {
@@ -981,7 +993,8 @@ public class JavaICFGBuilder {
 			StringBuilder clsName = new StringBuilder(className);
 			String genericTypes = null;
 			int idx = className.indexOf('<');
-			if (idx > 0) {
+			int idx_impl = className.indexOf("implements");
+			if (idx > 0 && idx < idx_impl) {
 				genericTypes = className.substring(idx);
 				clsName.delete(idx, clsName.length());
 			}

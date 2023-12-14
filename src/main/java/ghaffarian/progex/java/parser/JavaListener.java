@@ -1,4 +1,4 @@
-// Generated from Java.g4 by ANTLR 4.6
+// Generated from Java.g4 by ANTLR 4.13.1
 package ghaffarian.progex.java.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -128,6 +128,16 @@ public interface JavaListener extends ParseTreeListener {
 	 */
 	void exitEnumDeclaration(JavaParser.EnumDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link JavaParser#enumConstants}.
 	 * @param ctx the parse tree
 	 */
@@ -147,16 +157,6 @@ public interface JavaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEnumConstant(JavaParser.EnumConstantContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
-	 * @param ctx the parse tree
-	 */
-	void enterEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
-	 * @param ctx the parse tree
-	 */
-	void exitEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link JavaParser#interfaceDeclaration}.
 	 * @param ctx the parse tree

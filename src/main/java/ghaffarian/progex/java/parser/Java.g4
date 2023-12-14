@@ -80,6 +80,9 @@ enumDeclaration
     :   ENUM Identifier ('implements' typeList)?
         '{' enumConstants? ','? enumBodyDeclarations? '}'
     ;
+enumBodyDeclarations
+    :   ';' classBodyDeclaration*
+    ;
 
 enumConstants
     :   enumConstant (',' enumConstant)*
@@ -87,10 +90,6 @@ enumConstants
 
 enumConstant
     :   annotation* Identifier arguments? classBody?
-    ;
-
-enumBodyDeclarations
-    :   ';' classBodyDeclaration*
     ;
 
 interfaceDeclaration

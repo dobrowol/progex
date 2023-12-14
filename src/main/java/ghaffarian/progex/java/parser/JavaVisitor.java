@@ -1,4 +1,4 @@
-// Generated from Java.g4 by ANTLR 4.6
+// Generated from Java.g4 by ANTLR 4.13.1
 package ghaffarian.progex.java.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -83,6 +83,12 @@ public interface JavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEnumDeclaration(JavaParser.EnumDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link JavaParser#enumConstants}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -94,12 +100,6 @@ public interface JavaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEnumConstant(JavaParser.EnumConstantContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link JavaParser#enumBodyDeclarations}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEnumBodyDeclarations(JavaParser.EnumBodyDeclarationsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link JavaParser#interfaceDeclaration}.
 	 * @param ctx the parse tree
