@@ -29,6 +29,7 @@ public class Execution {
 	
 	private final ArrayList<Analysis> analysisTypes;
 	private final ArrayList<String> inputPaths;
+	private String dotFile;
     private boolean debugMode;
 	private String outputDir;
 	private Languages lang;
@@ -38,6 +39,7 @@ public class Execution {
         debugMode = false;
 		analysisTypes = new ArrayList<>();
 		inputPaths = new ArrayList<>();
+		dotFile = "";
 		lang = Languages.JAVA;
 		format = Formats.DOT;
 		outputDir = System.getProperty("user.dir");
@@ -54,7 +56,8 @@ public class Execution {
 		PDG			("PDG"),
 		AST			("AST"),
 		ICFG		("ICFG"),
-		SRC_INFO 	("INFO");
+		SRC_INFO 	("INFO"),
+		LOG_ICFG	("LOG_ICFG");
 		
 		private Analysis(String str) {
 			type = str;
@@ -104,6 +107,9 @@ public class Execution {
 	public void addInputPath(String path) {
 		inputPaths.add(path);
 	}
+	public void setDotFile(String path) {
+		dotFile = path;
+	}
 	
 	public void setLanguage(Languages lang) {
 		this.lang = lang;
@@ -149,7 +155,7 @@ public class Execution {
 	 * Execute the PROGEX program with the given options.
 	 */
 	public void execute() {
-		if (inputPaths.isEmpty()) {
+		if (inputPaths.isEmpty() && dotFile == "") {
 			Logger.info("No input path provided!\nAbort.");
 			System.exit(0);
 		}
@@ -221,6 +227,23 @@ public class Execution {
 					} catch (IOException ex) {
 						Logger.error(ex);
 					}
+					break;
+				//
+				case "LOG_ICFG":
+					Logger.info("\nInterprocedural Control-Flow Analysis for Logs");
+					Logger.info("=====================================");
+					Logger.debug("START: " + Logger.time() + '\n');
+					try {
+						ControlFlowGraph icfg = new ControlFlowGraph(dotFile);
+						icfg.importDOT(dotFile);
+						Logger.info("There are "+filePaths.length + " files");
+						for (String path: inputPaths) {
+							icfg.createLogControlFlow(path);
+						}
+					} catch (IOException ex) {
+						Logger.error(ex);
+					}
+					Logger.debug("END: " + Logger.time() + '\n');
 					break;
 				//
 				case "PDG":

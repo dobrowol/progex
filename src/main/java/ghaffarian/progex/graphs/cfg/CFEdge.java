@@ -41,5 +41,15 @@ public class CFEdge {
 		public String toString() {
 			return label;
 		}
+		// Custom method to create a Type from a string
+        public static Type fromString(String str) {
+            for (Type type : Type.values()) {
+                if (type.label.equalsIgnoreCase(str)) {
+                    return type;
+                }
+            }
+            // Handle the case where the string does not match any Type
+            throw new IllegalArgumentException("Unknown Type: " + str);
+        }
 	}	
 }

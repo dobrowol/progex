@@ -44,6 +44,10 @@ public class CLI {
 							exec.addAnalysisOption(Execution.Analysis.PDG);
 							break;
 						//
+						case "log_icfg":
+							exec.addAnalysisOption(Execution.Analysis.LOG_ICFG);
+							break;
+						//
 						case "icfg":
 							exec.addAnalysisOption(Execution.Analysis.ICFG);
 							break;
@@ -89,6 +93,13 @@ public class CLI {
 							} else {
 								printHelp("Format not specified!");
 								System.exit(1);
+							}
+							break;
+						//
+						case "dot":
+							if (i < args.length - 1) {
+								++i;
+								exec.setDotFile(args[i]) ;
 							}
 							break;
 						//
